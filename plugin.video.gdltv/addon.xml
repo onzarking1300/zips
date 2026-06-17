@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.gdltv" name="[B][COLOR red]GDLTV[/COLOR][/B]" version="1.0" provider-name="onzarking1300">
+  <requires>
+	  <import addon="script.module.requests" />
+	  <import addon="script.module.resolveurl" version="5.1.0"/>
+	  <import addon="script.module.beautifulsoup4"/>
+	  <import addon="inputstream.adaptive"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">The developer of this addon does not host any content provided and is not affiliated with any of the content providers.</summary>
+    <description lang="en">NOTE: not every stream will work.</description>
+    <platform>all</platform>
+	<assets>
+        <icon>icon.png</icon>
+		<fanart>fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
