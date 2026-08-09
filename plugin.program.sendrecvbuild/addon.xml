@@ -1,0 +1,24 @@
+<addon id="plugin.program.sendrecvbuild" name="SendRecvBuild" version="1.0" provider-name="onzarking1300">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0" />
+		<import addon="script.module.requests" />
+		<import addon="script.module.six"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>executable</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en"></summary>
+		<description>Send/receive your builds to other devices on your network.</description>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<forum></forum>
+		<website></website>
+		<source></source>
+		<disclaimer lang="en"></disclaimer>
+		<assets>
+			<screenshot></screenshot>
+		</assets>
+		<news></news>
+	</extension>
+</addon>
