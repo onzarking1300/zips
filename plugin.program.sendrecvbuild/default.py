@@ -55,7 +55,7 @@ def get_ip_address():
     sock=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     try:
         hostname=socket.gethostname()
-        ip=gethostbyname(hostname)
+        ip=socket.gethostbyname(hostname)
     except:
         ip='127.0.0.1'
     finally:
