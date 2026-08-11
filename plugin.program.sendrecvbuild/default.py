@@ -52,8 +52,13 @@ def get_platform():
 
 def get_ip_address():
     import socket
-    hostname=socket.gethostname()
-    ip=socket.gethostbyname(hostname)
+    try:
+        s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8',80))
+        ip=s.getsockname()[0]
+    except:
+        hostname=socket.gethostname()
+        ip=socket.gethostbyname(hostname)
     return ip
 
 def get_size_of_drive():
