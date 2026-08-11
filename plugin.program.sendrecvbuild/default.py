@@ -14,7 +14,7 @@ PORT=4278
 httpd_server=None
 server_thread=None
 home = xbmcvfs.translatePath('special://home')
-export = xbmcvfs.translatePath('special://temp')
+export = home
 keep_userdata = True
 
 def log(text,lvl=xbmc.LOGINFO):
@@ -52,9 +52,14 @@ def get_platform():
 
 def get_ip_address():
     import socket
+    ip=None
     sock=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-    hostname=socket.gethostname()
-    ip=socket.gethostbyname(hostname)
+    try:
+        sock.connect(('8.8.8.8',80))
+        ip=sock.getsockname()[0]
+    except:
+        return None
+    sock.close()
     return ip
 
 def get_size_of_drive():
@@ -154,6 +159,8 @@ def clear_kodi_log():
 def send():
 
     ip_address = get_ip_address()
+    if ip_address is None:
+        return
     global httpd_server
     if httpd_server is not None:
         xbmcgui.Dialog().notification(addon_name, 'Server is already running')
@@ -229,7 +236,7 @@ def receive():
         return
     sender_ip = keyboard.getText().strip()
     dl_url = f'http://{sender_ip}:{PORT}/EXPORT.zip'
-    dialog2.create(addon_name, 'Checking build size...')
+    
     
     #hook
     def dl_hook(cnt,block_size,total_size):
@@ -242,6 +249,7 @@ def receive():
         dialog2.update(percent, f'Downloading: {percent}% ({downloaded} / {total})\n'
                        'Keep both devices online and on the same WI-Fi.')
 
+    dialog2.create(addon_name, 'Checking build size...')
     try:
         if os.path.exists(zip_export_path):
             os.remove(zip_export_path)
