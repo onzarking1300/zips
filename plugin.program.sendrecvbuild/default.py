@@ -182,6 +182,7 @@ def send():
                     relpath = os.path.relpath(cur_filepath, home)
                     try:
                         zf.write(cur_filepath, relpath)
+                        zipped_files+=1
                     except Exception:
                         continue
                     finally:
@@ -190,9 +191,8 @@ def send():
                         dialog.close()
                         xbmcgui.Dialog().ok(addon_name, 'Compression aborted by user.')
                         return
-                    if zipped_files == total_files:
-                        percent = int((zipped_files / total_files) * 100)
-                        dialog.update(percent, f'Compressing: {percent}% complete')
+                    percent = int((zipped_files / total_files) * 100)
+                    dialog.update(percent, f'Compressing: {percent}% complete')
         dialog.close()
     except Exception as e:
         dialog.close()
