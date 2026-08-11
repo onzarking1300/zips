@@ -52,7 +52,6 @@ def get_platform():
 
 def get_ip_address():
     import socket
-    sock=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     hostname=socket.gethostname()
     ip=socket.gethostbyname(hostname)
     return ip
