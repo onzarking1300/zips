@@ -52,13 +52,9 @@ def get_platform():
 
 def get_ip_address():
     import socket
-    try:
-        s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8',80))
-        ip=s.getsockname()[0]
-    except:
-        hostname=socket.gethostname()
-        ip=socket.gethostbyname(hostname)
+    sock=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    hostname=socket.gethostname()
+    ip=socket.gethostbyname(hostname)
     return ip
 
 def get_size_of_drive():
@@ -124,7 +120,7 @@ def run_http_server():
 
         handler = SimpleHTTPRequestHandler
 
-        httpd_server = http_server(("", PORT), handler)
+        httpd_server = http_server(('0.0.0.0', PORT), handler)
 
         log(f'HTTP server listening on port {PORT}, serving from {export}')
 
@@ -189,19 +185,18 @@ def send():
                         zipped_files+=1
                     except Exception:
                         continue
-                    finally:
-                        zipped_files+=1
                     if dialog.iscanceled():
                         dialog.close()
                         xbmcgui.Dialog().ok(addon_name, 'Compression aborted by user.')
                         return
                     percent = int((zipped_files / total_files) * 100)
-                    dialog.update(percent, f'Compressing: {percent}% complete')
+                    dialog.update(percent, f'Compressing: {percent}% complete\n\n{relpath}')
         dialog.close()
     except Exception as e:
         dialog.close()
         log(f'Error: {e}')
         xbmcgui.Dialog().notification(addon_name, f'Could not compress build: {str(e)}')
+
     server_thread = threading.Thread(target=run_http_server)
     server_thread.start()
     dl_url = f'http://{ip_address}:{PORT}'
@@ -245,7 +240,7 @@ def receive():
         downloaded=round((cnt*block_size)/(1024*1024),1)
         total=round(total_size/(1024*1024),1)
         dialog2.update(percent, f'Downloading: {percent}% ({downloaded} / {total})\n'
-                       'Keep both devices on and on the same WI-Fi.')
+                       'Keep both devices online and on the same WI-Fi.')
 
     try:
         if os.path.exists(zip_export_path):
