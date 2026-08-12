@@ -154,15 +154,7 @@ def clear_kodi_log():
         xbmcgui.Dialog().notification(addon_name, 'Failed to clear kodi log.')
         return
 
-def send():
-
-    ip_address = get_ip_address()
-    if ip_address is None:
-        return
-    global httpd_server
-    if httpd_server is not None:
-        xbmcgui.Dialog().notification(addon_name, 'Server is already running')
-        return
+def zip_export():
     dialog = xbmcgui.DialogProgress()
     dialog.create(addon_name, ' Packing your Kodi configuation....\n\nThis may take a minute depending on your build size')
     zip_export_path = os.path.join(export, 'EXPORT.zip')
@@ -201,6 +193,17 @@ def send():
         dialog.close()
         log(f'Error: {e}')
         xbmcgui.Dialog().notification(addon_name, f'Could not compress build: {str(e)}')
+
+def send():
+    zip_export_path = os.path.join(export, 'EXPORT.zip')
+    ip_address = get_ip_address()
+    if ip_address is None:
+        return
+    global httpd_server
+    if httpd_server is not None:
+        xbmcgui.Dialog().notification(addon_name, 'Server is already running')
+        return
+    dialog = xbmcgui.DialogProgress()
 
     server_thread = threading.Thread(target=run_http_server)
     server_thread.start()
@@ -302,6 +305,7 @@ def receive():
 
 def MainMenu():
 
+    addLink('Build export.zip [B](DO THIS BEFORE SENDING BUILD TO DEVICE)[/B]','zip_export',isFolder=True)
     addLink('Send build to device','send',isFolder=True)
     addLink('Receive build from device','receive',isFolder=True)
     addLink('Get Information about your device','info_device',isFolder=True)
@@ -320,6 +324,8 @@ action = params.get('action','')
 
 if not params:
     MainMenu()
+elif action=='zip_export':
+    zip_export()
 elif action=='send':
     send()
 elif action=='receive':
