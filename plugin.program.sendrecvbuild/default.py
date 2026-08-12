@@ -254,25 +254,13 @@ def receive():
         if os.path.exists(zip_export_path):
             os.remove(zip_export_path)
         req=urllib.request.Request(dl_url, method='HEAD')
-        with urllib.request.urlopen(req,timeout=10) as resp:
-            remote_size = int(resp.headers.get('Content-Length',0))
+        resp=urllib.request.urlopen(req,timeout=10)
+           
     except Exception as e:
         dialog2.close()
         xbmcgui.Dialog().ok(addon_name, 'Connection Failed')
         log(f'Error: {e}')
         return
-
-    if remote_size:
-        gb = round(remote_size/(1024**3),2)
-        needed=round(gb*2.2,2)
-        _,used,free=get_size_of_drive()
-        if free < needed:
-            dialog2.close()
-            xbmcgui.Dialog().ok(addon_name, 'Error: Not enough space!')
-            return
-    else:
-        return
-
     delete_everything()
 
     urllib.request.urlretrieve(dl_url, zip_export_path, reporthook=dl_hook)
