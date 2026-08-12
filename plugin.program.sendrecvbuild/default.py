@@ -10,7 +10,7 @@ addon_icon=addon.getAddonInfo('icon')
 addon_id=addon.getAddonInfo('id')
 addon_name=addon.getAddonInfo('name')
 
-PORT=4278
+PORT=8080
 httpd_server=None
 server_thread=None
 home = xbmcvfs.translatePath('special://home')
@@ -88,30 +88,28 @@ def get_info():
                                 f'Used Space: {used} GB\nFree Space: {free} GB\nTotal Space: {total} GB\n')
 
 def delete_everything():
-    global keep_userdata
-    whitelist = [addon_id,'EXPORT.zip']
-    if keep_userdata == True:
+    whitelist = [addon_id, 'EXPORT.zip']
+    if keep_userdata:
         whitelist.append('userdata')
-    for root,dirs,files in os.walk(home):
+
+    for root, dirs, files in os.walk(home, topdown=False):
         for file in files:
             path = os.path.join(root, file)
-            for i in whitelist:
-                if i in path or 'EXPORT.zip' in path:
-                    continue
-                try:
-                    os.remove(path)
-                except:
-                    continue
-    for root,dirs,files in os.walk(home,topdown=False):
-        for i in whitelist:
-            if i in path or 'EXPORT.zip' in path:
-                    continue
-            try:
-                if not os.listdir(root) and root != home:
-                    os.rmdir(root)
-            except:
+            if any(w in path for w in whitelist):
                 continue
-
+            try:
+                os.remove(path)
+            except Exception:
+                continue
+        for d in dirs:
+            dpath = os.path.join(root, d)
+            if any(w in dpath for w in whitelist):
+                continue
+            try:
+                if not os.listdir(dpath):
+                    os.rmdir(dpath)
+            except Exception:
+                continue
 
 def run_http_server():
     global httpd_server
@@ -139,7 +137,7 @@ def stop_http_server():
     if httpd_server is not None:
         httpd_server.shutdown()
         httpd_server.server_close()
-        http_server=None
+        httpd_server=None
 
 def view_kodi_log():
     kodi_log_path=os.path.join(xbmcvfs.translatePath('special://logpath'), 'kodi.log')
@@ -264,8 +262,12 @@ def receive():
     delete_everything()
 
     urllib.request.urlretrieve(dl_url, zip_export_path, reporthook=dl_hook)
-
     dialog2.close()
+    if not zipfile.is_zipfile(zip_export_path):
+        xbmcgui.Dialog().ok(addon_name, 'Downloaded file is not a valid build.')
+        os.remove(zip_export_path)
+        return
+
 
     dialog2.create(addon_name, 'Extracting build...')
     try:
